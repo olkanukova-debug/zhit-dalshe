@@ -1,0 +1,12 @@
+# Не загружаем в интернет скриншоты и черновики
+Скриншоты ДЗ/
+index-v1.html
+index-v2.html
+index-pravka.html
+vtoraya-versiya.html
+vtoraya-versiya-final.html
+vtoraya-versiya-gotovo.html
+.env
+.DS_Store
+Thumbs.db
+desktop.ini
