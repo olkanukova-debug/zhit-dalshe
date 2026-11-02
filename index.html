@@ -46,11 +46,35 @@
     background: var(--blue); color: var(--heading);
     font: 600 16px/1 "Nunito", sans-serif; text-decoration: none;
     padding: 15px 26px; border-radius: 999px;
-    transition: transform .25s ease, background .25s ease;
+    position: relative; overflow: hidden; isolation: isolate;
+    transition: transform .25s ease, background .25s ease, box-shadow .45s ease;
   }
-  .btn:hover { transform: translateY(-2px); background: #9bb9cb; }
+  /* Свечение: мягкий ореол пыльного голубого */
+  .btn:hover, .btn:focus-visible {
+    transform: translateY(-2px); background: #9bb9cb;
+    box-shadow: 0 0 0 6px rgba(169, 196, 212, .28), 0 10px 30px rgba(169, 196, 212, .6);
+  }
+  .btn:focus-visible { outline: 2px solid var(--blue-dark); outline-offset: 3px; }
   .btn.ghost { background: transparent; border: 1.5px solid var(--olive-light); }
-  .btn.ghost:hover { background: var(--beige); }
+  .btn.ghost:hover, .btn.ghost:focus-visible {
+    background: var(--beige);
+    box-shadow: 0 0 0 6px rgba(184, 188, 148, .25), 0 10px 30px rgba(184, 188, 148, .5);
+  }
+  /* Волна: круг расходится от места нажатия */
+  .btn .wave {
+    position: absolute; z-index: -1; border-radius: 50%; pointer-events: none;
+    width: 20px; height: 20px; margin: -10px 0 0 -10px;
+    background: rgba(247, 243, 232, .75);
+    transform: scale(0); opacity: 1;
+    animation: wave .8s ease-out forwards;
+  }
+  .btn.ghost .wave { background: rgba(169, 196, 212, .55); }
+  @keyframes wave { to { transform: scale(22); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .btn { transition: background .25s ease, box-shadow .25s ease; }
+    .btn:hover, .btn:focus-visible { transform: none; }
+    .btn .wave { display: none; }
+  }
   header.top .btn { padding: 12px 20px; font-size: 15px; }
 
   /* Первый экран */
@@ -392,6 +416,19 @@
     entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+  // Волна на кнопках от места нажатия
+  document.querySelectorAll('.btn').forEach((btn) => {
+    btn.addEventListener('pointerdown', (e) => {
+      const r = btn.getBoundingClientRect();
+      const wave = document.createElement('span');
+      wave.className = 'wave';
+      wave.style.left = (e.clientX - r.left) + 'px';
+      wave.style.top = (e.clientY - r.top) + 'px';
+      btn.appendChild(wave);
+      wave.addEventListener('animationend', () => wave.remove());
+    });
+  });
 </script>
 </body>
 </html>
